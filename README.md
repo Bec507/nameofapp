@@ -1,6 +1,6 @@
 # README
 
-My name is Becca and this is my fist app!
+My name is Becca and this is my first app!
 
 Things you may want to cover:
 
