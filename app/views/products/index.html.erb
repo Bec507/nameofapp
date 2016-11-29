@@ -2,6 +2,7 @@
 
 <h1>Products</h1>
 
+<!--
 <table>
   <thead>
     <tr>
@@ -27,17 +28,21 @@
     <% end %>
   </tbody>
 </table>
+-->
 
 <br>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
       <% @products.each do |product| %>
         <div class="col-sm-2 col-md-4">
-            <%= image_tag(product.image_url, class: "img-responsive") %>
-            <h1>Sportii Bracelet</h1>
-            <p>Sportii Bracelet</p>
-            <strong>£26.95</strong>
+            <%= image_tag(product.Black sportii.jpg, class: "img-responsive") %>
+            <h1><%= product.name %></h1>
+            <p><%= product.description %></p>
+            <strong><%= product.price %>£</strong><br>
+            <td><%= link_to 'Show', product %></td>
+            <td><%= link_to 'Edit', edit_product_path(product) %></td>
+            <td><%= link_to 'Destroy', product, method: :delete, data: {confirm: 'Are you sure?' } %></td>
         </div><!--/col-->
       <% end %>
     </div><!--.container -->
