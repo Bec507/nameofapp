@@ -21,6 +21,7 @@
         <td><%= product.description %></td>
         <td><%= product.image_url %></td>
         <td><%= product.colour %></td>
+        <td><%= product.price %></td>
         <td><%= link_to 'Show', product %></td>
         <td><%= link_to 'Edit', edit_product_path(product) %></td>
         <td><%= link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
@@ -36,9 +37,15 @@
 
 <div class="container-fluid">
     <div class="row">
-      <% @products.each do |product| %>
-       <%= render @products %>
+      <% @products.each do |products| %>
+       <div class="col-sm-2 col-md-4">
+        <%= product.name %>
+        <%= image_tag(product.image_url, class: "img-responsive") %>
+        <%= product.description %>
+        <%= product.color %>
+        <%= product.price %>
+       </div><!-- .col -->
       <% end %>
-    </div><!--.container -->
-</div>
+    </div><!--.row -->
+</div><!-- .container-fluid -->
 <%= link_to 'New Product', new_product_path %>
