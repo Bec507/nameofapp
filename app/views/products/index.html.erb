@@ -37,15 +37,9 @@
 
 <div class="container-fluid">
     <div class="row">
-      <% @products.each do |products| %>
-       <div class="col-sm-2 col-md-4">
-        <%= product.name %>
-        <%= image_tag(product.image_url, class: "img-responsive") %>
-        <%= product.description %>
-        <%= product.color %>
-        <%= product.price %>
-       </div><!-- .col -->
-      <% end %>
+        <% @products.each do |product| %>
+            <%= render partial: "product", locals: {product: product} %>
+        <% end %>
     </div><!--.row -->
 </div><!-- .container-fluid -->
 <%= link_to 'New Product', new_product_path %>
