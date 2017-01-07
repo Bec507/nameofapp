@@ -30,4 +30,21 @@ ActiveRecord::Schema.define(version: 20161130055117) do
     t.integer  "price"
   end
 
+  create_table "users", force: true to |t|
+        t.string "first_name"
+        t.string "last_name"
+        t.datetime "created_at"
+        r.datetime "updated_at"
+        t.datetime "updated_at"
+        t.string "email", default: "", null: false
+        t.string "encrypted_password", default: "", null: false
+        t.string "reset_password_token"
+        t.datetime "reset_password_sent_at"
+        t.datetime "remember_created_at"
+        t.integet "sign_in_count", default: 0
+        t.datetime "current_sign_in_at"
+        t.datetime "last_sign_in_at"
+        t.string "current_sign_in_ip"
+        t.string "last_sign_in_ip"
+    end
 end
