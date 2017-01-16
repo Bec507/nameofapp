@@ -1,0 +1,397 @@
+From 20a52c371643b0cca701ea3916d81ba5bd67cde4 Mon Sep 17 00:00:00 2001
+From: cousine <iam@cousine.me>
+Date: Mon, 9 Jan 2017 11:19:57 +0200
+Subject: [PATCH] Various syntax error fixes
+
+---
+ app/assets/javascripts/site.js            |  6 ++--
+ app/controllers/application_controller.rb |  8 +++---
+ app/controllers/comments_controller.rb    | 48 +++++++++++++++----------------
+ app/controllers/products_controller.rb    | 32 ++++++++++-----------
+ app/controllers/users_controller.rb       | 18 ++++++------
+ app/models/ability.rb                     | 12 ++++----
+ app/views/products/_comments.html.erb     |  6 ++--
+ app/views/products/_form.html.erb         | 22 --------------
+ app/views/products/_new_comment.html.erb  |  6 ++--
+ app/views/products/_product.html.erb      |  5 ++--
+ app/views/products/index.html.erb         | 33 +--------------------
+ app/views/static_pages/contact.html.erb   |  4 +--
+ 12 files changed, 74 insertions(+), 126 deletions(-)
+
+diff --git a/app/assets/javascripts/site.js b/app/assets/javascripts/site.js
+index 380c131..8063d53 100644
+--- a/app/assets/javascripts/site.js
++++ b/app/assets/javascripts/site.js
+@@ -1,9 +1,9 @@
+ $(document).on('turbolinks:load', function (){
+-    $('.rating').raty( {path: '/assets' scoreName: 'comment[rating]' });
+-    $('.rated').raty({ path: '/assets',
++    $('.rating').raty( {path: '/assets/images', scoreName: 'comment[rating]' });
++    $('.rated').raty({ path: '/assets/images',
+                      readOnly: true,
+                      score: function () {
+                      return $(this).attr('data-score');
+                      }
+                     });
+-});
+\ No newline at end of file
++});
+diff --git a/app/controllers/application_controller.rb b/app/controllers/application_controller.rb
+index 4185ea2..56a72ea 100644
+--- a/app/controllers/application_controller.rb
++++ b/app/controllers/application_controller.rb
+@@ -1,8 +1,8 @@
+ class ApplicationController < ActionController::Base
+   protect_from_forgery with: :exception
+-    
+-rescue_from CanCan:AccessDenied do |exception|
++
++  rescue_from CanCan::AccessDenied do |exception|
+     redirect_to main_app.root_url, :alert => exception.message
+-end
+-    
++  end
++
+ end
+diff --git a/app/controllers/comments_controller.rb b/app/controllers/comments_controller.rb
+index bbee1b7..5f9e10c 100644
+--- a/app/controllers/comments_controller.rb
++++ b/app/controllers/comments_controller.rb
+@@ -1,26 +1,26 @@
+ class CommentsController < ApplicationController
+-    
+-    def create
+-        @product = Product.find(params[:product_id])
+-        @comment = @product.comments.new(comment_params)
+-        @comment.user = current_user
+-        respond_to do |format|
+-            if @comment.save
+-                format.html { redirect_to @product, notice: 'Review was created successfully.' }
+-                format.json { render :show, status: :created, location: @product }
+-            else
+-                format.html { redirect_to @product, alert: 'Review was not saved successfully.' }
+-                format.json { render json: @comment.errors, status: :unprocessable_entity }
+-            end
+-        end     
+-    end
+-    
+-    def destroy
+-    end
+-    
+-    
+-    #private
+-    def comment_params
+-        params.require(:comment).permit(:user_id, :bodt, :rating)
+-    end
++
++  def create
++    @product = Product.find(params[:product_id])
++    @comment = @product.comments.new(comment_params)
++    @comment.user = current_user
++    respond_to do |format|
++      if @comment.save
++        format.html { redirect_to @product, notice: 'Review was created successfully.' }
++        format.json { render :show, status: :created, location: @product }
++      else
++        format.html { redirect_to @product, alert: 'Review was not saved successfully.' }
++        format.json { render json: @comment.errors, status: :unprocessable_entity }
++      end
++    end     
++  end
++
++  def destroy
++  end
++
++
++  #private
++  def comment_params
++    params.require(:comment).permit(:user_id, :body, :rating)
++  end
+ end
+diff --git a/app/controllers/products_controller.rb b/app/controllers/products_controller.rb
+index 2d53f07..b2aac87 100644
+--- a/app/controllers/products_controller.rb
++++ b/app/controllers/products_controller.rb
+@@ -5,30 +5,30 @@ class ProductsController < ApplicationController
+   # GET /products.json
+   def index
+     if params[:q]
+-        search_term = params[:q]
+-        @products = Product.where("name LIKE ?", "%#{search_term}%")
++      search_term = params[:q]
++      @products = Product.where("name LIKE ?", "%#{search_term}%")
+     else
+-        @products = Product.all
++      @products = Product.all
+     end
+   end
+ 
+   # GET /products/1
+   # GET /products/1.json
+   def show
+-      @comments = @product.comments.order("created_at DESC")
+-      Post.paginate(:page => params[:page], :per_page => 5)
++    @comments = @product.comments.order("created_at DESC")
++    #Post.paginate(:page => params[:page], :per_page => 5)
+   end
+ 
+   # GET /products/new
+   def new
+-    @products = Product.new
++    @product = Product.new
+   end
+ 
+   # GET /products/1/edit
+   def edit
+-     
++
+   end
+-    
++
+   # POST /products
+   # POST /products.json
+   def create
+@@ -70,14 +70,14 @@ class ProductsController < ApplicationController
+   end
+ 
+   private
+-    # Use callbacks to share common setup or constraints between actions.
+-    def set_product
+-      @product = Product.find(params[:id])
+-    end
++  # Use callbacks to share common setup or constraints between actions.
++  def set_product
++    @product = Product.find(params[:id])
++  end
+ 
+-    # Never trust parameters from the scary internet, only allow the white list through.
+-    def product_params
+-      params.require(:product).permit(:name, :description, :image_url, :image_tag, :colour, :price)
+-    end
++  # Never trust parameters from the scary internet, only allow the white list through.
++  def product_params
++    params.require(:product).permit(:name, :description, :image_url, :image_tag, :colour, :price)
++  end
+ 
+ end
+diff --git a/app/controllers/users_controller.rb b/app/controllers/users_controller.rb
+index ba6fca8..7a885b8 100644
+--- a/app/controllers/users_controller.rb
++++ b/app/controllers/users_controller.rb
+@@ -1,7 +1,7 @@
+ class UsersController < ApplicationController
+   before_action :set_user, only: [:show, :edit, :update, :destroy]
+   before_filter :authenticate_user!
+-  load_and_authorise_resource
++  load_and_authorize_resource
+ 
+   # GET /users
+   # GET /users.json
+@@ -64,13 +64,13 @@ class UsersController < ApplicationController
+   end
+ 
+   private
+-    # Use callbacks to share common setup or constraints between actions.
+-    def set_user
+-      @user = User.find(params[:id])
+-    end
++  # Use callbacks to share common setup or constraints between actions.
++  def set_user
++    @user = User.find(params[:id])
++  end
+ 
+-    # Never trust parameters from the scary internet, only allow the white list through.
+-    def user_params
+-      params.require(:user).permit(:first_name, :last_name)
+-    end
++  # Never trust parameters from the scary internet, only allow the white list through.
++  def user_params
++    params.require(:user).permit(:first_name, :last_name)
++  end
+ end
+diff --git a/app/models/ability.rb b/app/models/ability.rb
+index e27e836..0a56b4d 100644
+--- a/app/models/ability.rb
++++ b/app/models/ability.rb
+@@ -1,9 +1,9 @@
+ class Ability 
+-    include CanCan::Ability
+-    
+-def initialize(user)
++  include CanCan::Ability
++
++  def initialize(user)
+     user ||= User.new # guest user (not logged in)
+-    can :manage, user, id: user,id
++    can :manage, user, id: user.id
++  end
++
+ end
+-    
+-end
+\ No newline at end of file
+diff --git a/app/views/products/_comments.html.erb b/app/views/products/_comments.html.erb
+index 1a32d84..12d1edc 100644
+--- a/app/views/products/_comments.html.erb
++++ b/app/views/products/_comments.html.erb
+@@ -1,12 +1,12 @@
+ <div class="product-reviews">
+-    <% @comments.each do |comment| %>
++    <% @product.comments.each do |comment| %>
+         <div class="row">
+             <hr>
+             <p><% comment.user.first_name %> <small><em><%= "#{time_ago_in_words(comment.created_at)} ago" %></em></small></p>
+             <p><%= "Rating: #{comment.rating}/5" %></p>
+-            <p><%= commment.body %></p>
++            <p><%= comment.body %></p>
+         </div>
+     <div class="rated" data-score="<%= comment.rating %>"></div>
+     <%= will_paginate @posts %>
+     <% end%>
+-</div>
+\ No newline at end of file
++</div>
+diff --git a/app/views/products/_form.html.erb b/app/views/products/_form.html.erb
+index a8ea44f..2eb0be9 100644
+--- a/app/views/products/_form.html.erb
++++ b/app/views/products/_form.html.erb
+@@ -41,25 +41,3 @@
+ 
+ <% end %>
+ 
+-  <div class="field">
+-      <%= f.label :name %><br>
+-      <%= f.text_field :name %>
+-  </div>
+-
+-  <div class="field">
+-      <label for="product_name">Name</label><br>
+-      <input id="product_name" name="product[name]" type="text" />
+-  </div>    
+-
+-  <div class="field">
+-      <%= f.label :description %><br>
+-      <%= f.text_area :description %>
+-  </div>
+-
+-  <div class="actions">
+-      <%= f.submit %>
+-  </div>
+-
+-<% end %>
+-
+-    
+diff --git a/app/views/products/_new_comment.html.erb b/app/views/products/_new_comment.html.erb
+index 9cfe100..a7144d4 100644
+--- a/app/views/products/_new_comment.html.erb
++++ b/app/views/products/_new_comment.html.erb
+@@ -1,6 +1,6 @@
+ <% if signed_in? %>
+     <h4>Leave a review:</h4>
+-    <%= form_for([@product, @product.comments.build]) do|if| %>
++    <%= form_for([@product, @product.comments.build]) do |f| %>
+         <p>
+             <%= f.label :body, "Comments" %><br>
+             <%= f.text_area :body %>
+@@ -8,8 +8,10 @@
+         <p>
+             <div class="rating"></div>
+         </p>
++        <br/>
+         <p>
+             <%= f.submit "Submit" %>
+         </p>
++
+     <% end %>
+-<% end %>
+\ No newline at end of file
++<% end %>
+diff --git a/app/views/products/_product.html.erb b/app/views/products/_product.html.erb
+index bc6eb70..ded164f 100644
+--- a/app/views/products/_product.html.erb
++++ b/app/views/products/_product.html.erb
+@@ -2,9 +2,8 @@
+            <h1><%= link_to product.name, product %></h1>
+            <img><%= image_tag(product.image_url, class: "img-responsive") %>
+            <p><%= product.description %></p>
+-           <p><%= product.color %></p>
++           <p><%= product.colour %></p>
+            <strong>£<%= product.price %></strong>
+        </div><!-- .col -->
+-      <% end %>
+ 
+-<%= @product.highest_rating_comment %>
+\ No newline at end of file
++<%= product.highest_rating_comment %>
+diff --git a/app/views/products/index.html.erb b/app/views/products/index.html.erb
+index a7d2882..3035fb8 100644
+--- a/app/views/products/index.html.erb
++++ b/app/views/products/index.html.erb
+@@ -2,43 +2,12 @@
+ 
+ <h1>Products</h1>
+ 
+-<!--
+-<table>
+-  <thead>
+-    <tr>
+-      <th>Name</th>
+-      <th>Description</th>
+-      <th>Image url</th>
+-      <th>Colour</th>
+-      <th colspan="3"></th>
+-    </tr>
+-  </thead>
+-
+-  <tbody>
+-    <% @products.each do |product| %>
+-      <tr>
+-        <td><%= product.name %></td>
+-        <td><%= product.description %></td>
+-        <td><%= product.image_url %></td>
+-        <td><%= product.colour %></td>
+-        <td><%= product.price %></td>
+-        <td><%= link_to 'Show', product %></td>
+-        <td><%= link_to 'Edit', edit_product_path(product) %></td>
+-        <td><%= link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+-      </tr>
+-    <% end %>
+-  </tbody>
+-</table>
+--->
+-
+ <br>
+ 
+-
+-
+ <div class="container-fluid">
+     <div class="row">
+         <% @products.each do |product| %>
+-            <%= render @product %>
++            <%= render product %>
+         <% end %>
+     </div><!--.row -->
+ </div><!-- .container-fluid -->
+diff --git a/app/views/static_pages/contact.html.erb b/app/views/static_pages/contact.html.erb
+index 2a698d8..e32d701 100644
+--- a/app/views/static_pages/contact.html.erb
++++ b/app/views/static_pages/contact.html.erb
+@@ -1,13 +1,13 @@
+ <h1>Contact Us</h1>
+ 
+-<%= flash [:notice] %>
++<%= flash[:notice] %>
+ 
+ <p>If you have any information on any of our products, please contact in any of the following ways:</p>
+ 
+ <p>Email: aaaaaa@gmail.com</p>
+ <p>Telephone: 00000 000000</p>
+ 
+-<%= form_tag("/static_pages/thank_you") d0 %>
++<%= form_tag("/static_pages/thank_you") do %>
+ <div class="row">
+     <div class="col-md-4">
+         <div class="form-group">
+-- 
+2.3.6
+

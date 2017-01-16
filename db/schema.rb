@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 20170108142048) do
+ActiveRecord::Schema.define(version: 20170108160228) do
 
   create_table "comments", force: :cascade do |t|
     t.integer  "user_id"
@@ -23,9 +22,6 @@ ActiveRecord::Schema.define(version: 20170108142048) do
     t.index ["product_id"], name: "index_comments_on_product_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
-=======
-ActiveRecord::Schema.define(version: 20170107161713) do
->>>>>>> master
 
   create_table "orders", force: :cascade do |t|
     t.integer "user_id"
@@ -60,6 +56,7 @@ ActiveRecord::Schema.define(version: 20170107161713) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
+    t.boolean  "admin"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
