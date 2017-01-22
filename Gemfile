@@ -68,3 +68,4 @@ gem 'bigdecimal', '~> 1.3.0'
 
 gem 'rails-controller-testing'
 
+gem 'stripe'

@@ -40,7 +40,11 @@
                 <%= link_to 'Back', products_path %>
             </p>
         </div>
+    <%= form_tag "/payments/create" do %>
+    <%= render partial: "shared/stripe_checkout_button" %>
+    <% end %>
     </div>
 </div>
+
 
 
