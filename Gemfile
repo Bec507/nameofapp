@@ -63,3 +63,6 @@ gem 'will_paginate', '~> 3.1.0'
 gem 'bcrypt', '~> 3.1.11'
 
 gem 'bigdecimal', '~> 1.3.0'
+
+
+gem 'rails-controller-testing'
