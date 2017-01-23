@@ -44,7 +44,7 @@
                 <%= link_to 'Back', products_path %>
             </p>
         </div>
-    
+        <div class="alert alert-info" style="display:none" role="alert">A new comment was posted!</div>
     <% if signed_in? %>
         <%= form_tag "/payments/create" do %>
         <%= hidden_field_tag(:product_id, @product.id) %>
