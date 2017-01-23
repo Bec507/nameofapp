@@ -40,9 +40,13 @@
                 <%= link_to 'Back', products_path %>
             </p>
         </div>
-    <%= form_tag "/payments/create" do %>
+    
+    <% if signed_in? %>
+        <%= form_tag "/payments/create" do %>
+        <%= hidden_field_tag(:product_id, @product.id) %>
     <%= render partial: "shared/stripe_checkout_button" %>
-    <% end %>
+        <% end %>
+    <% end %> 
     </div>
 </div>
 
