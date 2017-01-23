@@ -1,10 +1,12 @@
-       <div class="col-sm-2 col-md-4">
-           <h1><%= link_to product.name, product %></h1>
-           <img><%= image_tag(product.image_url, class: "img-responsive") %>
-           <p><%= product.description %></p>
-           <p><%= product.color %></p>
-           <strong>£<%= product.price %></strong>
-       </div><!-- .col -->
-      <% end %>
+<% cache product do %>       
+<div class="col-sm-2 col-md-4">
+        <h1><%= link_to product.name, product %></h1>
+       <img><%= image_tag(product.image_url, class: "img-responsive") %>
+       <p><%= product.description %></p>
+       <p><%= product.color %></p>
+       <strong>£<%= product.price %></strong>
+   </div><!-- .col -->
+        <% end %>
+<% end %>
 
 <%= @product.highest_rating_comment %>
